@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[179]:
+# In[199]:
 
 
 import pandas as pd
@@ -9,9 +9,10 @@ import numpy as np
 from scipy.sparse import csr_matrix
 from sqlalchemy import create_engine
 from sklearn.neighbors import NearestNeighbors
+from sklearn.decomposition import PCA
 
 
-# In[181]:
+# In[301]:
 
 
 def filter_data(data_excel,q_bought,dts, dte):
@@ -21,7 +22,7 @@ def filter_data(data_excel,q_bought,dts, dte):
     return newdf
 
 
-# In[182]:
+# In[302]:
 
 
 def preparemldata(filtered_data):
@@ -30,7 +31,25 @@ def preparemldata(filtered_data):
     return ml_data
 
 
-# In[183]:
+# In[317]:
+
+
+def dim_reduc(ml_data):
+    pca = PCA()
+    X_train = pca.fit_transform(ml_data)
+    explained_variance = pca.explained_variance_ratio_
+    comp_selection = 0
+    for i in range(len(ml_data.columns)):
+        if explained_variance[0:i].sum() > 0.95: # look for number of components 
+            #print(i, explained_variance[0:i].sum())
+            break
+        comp_selection = comp_selection + 1
+    pca = PCA(n_components = comp_selection)
+    ml_data_f = pca.fit_transform(ml_data)
+    return ml_data_f   
+
+
+# In[318]:
 
 
 def knn(ml_data,nb, metric):
@@ -39,7 +58,7 @@ def knn(ml_data,nb, metric):
     return  indices
 
 
-# In[189]:
+# In[319]:
 
 
 # main method
@@ -47,7 +66,8 @@ def main():
     data_excel = pd.read_excel('C:\\Users\\jeffr\\Python\\recommendation\\superstore.xls',sheetname =0)
     filtered_data = filter_data(data_excel,6,'2015-01-01','2017-12-31')
     ml_data = preparemldata(filtered_data)
-    indices = knn(ml_data,5,'cosine')
+    ml_data_f = dim_reduc(ml_data)
+    indices = knn(ml_data_f,5,'cosine')
     recommendation = pd.DataFrame(np.array(ml_data.index[indices]))
     recommendation = recommendation.rename(columns={
         0:'items',
@@ -61,7 +81,7 @@ def main():
     print('done')
 
 
-# In[190]:
+# In[320]:
 
 
 if __name__ == "__main__":
