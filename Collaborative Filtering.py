@@ -12,7 +12,7 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.decomposition import PCA,KernelPCA
 
 
-# In[166]:
+# In[2]:
 
 
 def filter_data(data_excel,q_bought,dts, dte):
@@ -23,7 +23,7 @@ def filter_data(data_excel,q_bought,dts, dte):
     return newdf
 
 
-# In[167]:
+# In[3]:
 
 
 def preparemldata(filtered_data):
@@ -33,7 +33,7 @@ def preparemldata(filtered_data):
     return ml_data
 
 
-# In[168]:
+# In[4]:
 
 
 def dim_reduc(ml_data):
@@ -43,7 +43,7 @@ def dim_reduc(ml_data):
     -np.sort(-explained_variance)
     comp_selection = 0
     for i in range(len(ml_data.columns)):
-        if explained_variance[0:i].sum() > 0.95: # look for number of components 
+        if explained_variance[0:i].sum() > 0.95: # look for the number of components 
             #print(i, explained_variance[0:i].sum())
             break
         comp_selection = comp_selection + 1
@@ -52,7 +52,7 @@ def dim_reduc(ml_data):
     return ml_data_f   
 
 
-# In[169]:
+# In[5]:
 
 
 def knn(ml_data,nb, metric):
@@ -61,7 +61,7 @@ def knn(ml_data,nb, metric):
     return  distance,indices
 
 
-# In[327]:
+# In[41]:
 
 
 def collaborative_fil(dis,indices,ml_data,num_of_recom):
@@ -73,15 +73,15 @@ def collaborative_fil(dis,indices,ml_data,num_of_recom):
         srs_name = pd.Series(np.array(ml_data.index[indices])[user][0:1])
         srs = pd.Series([])
         for i in range(num_of_recom-1):
-            srs = srs.append(user_pref.nlargest(5,user_pref.columns[i])[user_pref.columns[i]]*dis[0][i+1])
+            srs = srs.append(user_pref.nlargest(5,user_pref.columns[i])[user_pref.columns[i]]*dis[user][i+1])
             srs_name = srs_name.append(pd.Series(np.array(ml_data.index[indices])[user][0:1]))
             
-        srs = srs.sort_values(ascending = False)[0:5] 
+        srs = srs[srs>0].sort_values(ascending = True)[0:5] 
         newdf = newdf.append(pd.concat([srs_name.reset_index(drop=True),srs.reset_index()],axis=1))
     return newdf
 
 
-# In[328]:
+# In[42]:
 
 
 def main():
@@ -102,7 +102,7 @@ def main():
     print('done')
 
 
-# In[330]:
+# In[43]:
 
 
 if __name__ == "__main__":
