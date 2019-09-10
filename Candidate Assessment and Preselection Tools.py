@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[244]:
+# In[303]:
 
 
 import pandas as pd
@@ -16,7 +16,7 @@ from sklearn.feature_selection import SelectKBest,chi2, RFE
 from sklearn.utils import resample
 
 
-# In[245]:
+# In[304]:
 
 
 def filter_data(data):
@@ -30,7 +30,7 @@ def filter_data(data):
    
 
 
-# In[246]:
+# In[305]:
 
 
 def onehot(filtered_data):
@@ -42,13 +42,13 @@ def onehot(filtered_data):
     encoded_married = onehot_encoder.fit_transform(np.array(filtered_data['MARRIED']).reshape(-1,1))
     df_prov = pd.DataFrame(encoded_prov, columns = ['prov_' + str(i) for i in range(np.shape(encoded_prov)[1])])
     df_sign = pd.DataFrame(encoded_sign,columns=['sign' + str(i) for i in range(np.shape(encoded_sign)[1])])
-    df_major = pd.DataFrame(encoded_sign,columns=['major' + str(i) for i in range(np.shape(encoded_major)[1])])
+    df_major = pd.DataFrame(encoded_major,columns=['major' + str(i) for i in range(np.shape(encoded_major)[1])])
     df_married = pd.DataFrame(encoded_married, columns = ['marr_' + str(i) for i in range(np.shape(encoded_married)[1])])
     onehot_data = pd.concat([data_num,df_prov,df_sign,df_major,df_married], axis = 1)
     return onehot_data
 
 
-# In[247]:
+# In[306]:
 
 
 def feature_labels(onehot_data):
@@ -63,7 +63,7 @@ def feature_labels(onehot_data):
     
 
 
-# In[248]:
+# In[307]:
 
 
 def feature_select(feature, label):
@@ -74,7 +74,7 @@ def feature_select(feature, label):
     
 
 
-# In[249]:
+# In[308]:
 
 
 def up_sample(feature_reduc, label):
@@ -92,7 +92,7 @@ def up_sample(feature_reduc, label):
     return up_feature, up_label
 
 
-# In[250]:
+# In[309]:
 
 
 def adaboost(up_feature, up_label):
@@ -108,7 +108,7 @@ def adaboost(up_feature, up_label):
     
 
 
-# In[251]:
+# In[310]:
 
 
 def gradboost(up_feature, up_label):        
@@ -126,7 +126,7 @@ def gradboost(up_feature, up_label):
     return probs, y_test
 
 
-# In[252]:
+# In[311]:
 
 
 def rand_forest(up_feature, up_label):
@@ -146,7 +146,7 @@ def rand_forest(up_feature, up_label):
    
 
 
-# In[253]:
+# In[312]:
 
 
 def roc_curve_auc(frst_y_probs,frst_y_test,grad_y_probs, grad_y_test):
@@ -162,7 +162,7 @@ def roc_curve_auc(frst_y_probs,frst_y_test,grad_y_probs, grad_y_test):
     
 
 
-# In[254]:
+# In[313]:
 
 
 def main():
@@ -184,17 +184,11 @@ def main():
     roc_curve_auc(frst_y_probs,frst_y_test,grad_y_probs, grad_y_test)
 
 
-# In[255]:
+# In[314]:
 
 
 if __name__ == "__main__":
     main()
-
-
-# In[ ]:
-
-
-
 
 
 # In[ ]:
