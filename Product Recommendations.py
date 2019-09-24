@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[199]:
+# In[1]:
 
 
 import pandas as pd
@@ -9,20 +9,21 @@ import numpy as np
 from scipy.sparse import csr_matrix
 from sqlalchemy import create_engine
 from sklearn.neighbors import NearestNeighbors
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA,KernelPCA
 
 
-# In[301]:
+# In[2]:
 
 
 def filter_data(data_excel,q_bought,dts, dte):
     newdf = data_excel[(data_excel['Quantity'] > q_bought) & (data_excel['Order Date'] <= dte) & (data_excel['Order Date'] >= dts) ]
     newdf = newdf[['Customer ID','Product Name','Quantity']]
     newdf = newdf.drop_duplicates()
+    newdf = newdf[newdf['Product Name'].duplicated(keep=False)] #filter the product that at least bought twice
     return newdf
 
 
-# In[302]:
+# In[3]:
 
 
 def preparemldata(filtered_data):
@@ -31,25 +32,18 @@ def preparemldata(filtered_data):
     return ml_data
 
 
-# In[317]:
+# In[4]:
 
 
 def dim_reduc(ml_data):
-    pca = PCA()
-    X_train = pca.fit_transform(ml_data)
-    explained_variance = pca.explained_variance_ratio_
-    comp_selection = 0
-    for i in range(len(ml_data.columns)):
-        if explained_variance[0:i].sum() > 0.95: # look for number of components 
-            #print(i, explained_variance[0:i].sum())
-            break
-        comp_selection = comp_selection + 1
-    pca = PCA(n_components = comp_selection)
-    ml_data_f = pca.fit_transform(ml_data)
+    pca = PCA(.95) #feature extraction
+    pca.fit_transform(ml_data)
+    pca = PCA(n_components = pca.n_components_ )# comp_selection)
+    ml_data_f = pca.fit_transform(ml_data) #fit the data and transform the data
     return ml_data_f   
 
 
-# In[318]:
+# In[5]:
 
 
 def knn(ml_data,nb, metric):
@@ -58,7 +52,7 @@ def knn(ml_data,nb, metric):
     return  indices
 
 
-# In[319]:
+# In[6]:
 
 
 # main method
@@ -81,7 +75,7 @@ def main():
     print('done')
 
 
-# In[320]:
+# In[7]:
 
 
 if __name__ == "__main__":
