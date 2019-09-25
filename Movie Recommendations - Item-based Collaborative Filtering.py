@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[24]:
 
 
 import pandas as pd
@@ -10,9 +10,10 @@ from scipy.sparse import csr_matrix
 from sqlalchemy import create_engine
 from sklearn.neighbors import NearestNeighbors
 from sklearn.decomposition import PCA,KernelPCA
+from sklearn.feature_selection import VarianceThreshold
 
 
-# In[3]:
+# In[25]:
 
 
 def preparemldata(data_movie): # return ml_data as the original one which can be used to evaluate the model
@@ -22,26 +23,18 @@ def preparemldata(data_movie): # return ml_data as the original one which can be
     return ml_data,ml_data2
 
 
-# In[4]:
+# In[26]:
 
 
 def dim_reduc(ml_data):
-    pca = PCA() #feature extraction
+    pca = PCA(.95)  # comp_selection to explain 95% of variation
     pca.fit_transform(ml_data)
-    explained_variance = pca.explained_variance_ratio_
-    -np.sort(-explained_variance)
-    comp_selection = 0
-    for i in range(len(ml_data.columns)):
-        if explained_variance[0:i].sum() > 0.95: # look for number of components 
-            print(i, explained_variance[0:i].sum())
-            break
-        comp_selection = comp_selection + 1
-    pca = PCA(n_components = comp_selection)
-    ml_data_f = pca.fit_transform(ml_data) #fit the data and transform the data
+    pca = PCA(n_components = pca.n_components_ ) #feature extraction creates brand new features.
+    ml_data_f = pca.fit_transform(ml_data)
     return ml_data_f  
 
 
-# In[5]:
+# In[27]:
 
 
 def knn(ml_data_reduc, metric):
@@ -50,7 +43,7 @@ def knn(ml_data_reduc, metric):
     return  distance,indices
 
 
-# In[6]:
+# In[28]:
 
 
 def item_based_cf(ml_data,distance,indices):
@@ -80,7 +73,7 @@ def item_based_cf(ml_data,distance,indices):
     return prd, test_prd
 
 
-# In[35]:
+# In[29]:
 
 
 def recommended_movies(prd,ml_data2,data_movie, test_prd,ml_data,num_recom):
@@ -101,7 +94,7 @@ def recommended_movies(prd,ml_data2,data_movie, test_prd,ml_data,num_recom):
     
 
 
-# In[54]:
+# In[30]:
 
 
 def eval(ml_data,test_prd,df_prd,data_movie,num_recom):
@@ -131,7 +124,7 @@ def eval(ml_data,test_prd,df_prd,data_movie,num_recom):
     print('MAE',mae)
 
 
-# In[55]:
+# In[31]:
 
 
 def main():
@@ -147,7 +140,7 @@ def main():
     recommended_movies(prd,ml_data2,data_movie, test_prd,ml_data,10)
 
 
-# In[56]:
+# In[32]:
 
 
 if __name__ == "__main__":
