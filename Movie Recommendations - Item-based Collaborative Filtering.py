@@ -13,7 +13,7 @@ from sklearn.decomposition import PCA,KernelPCA
 from sklearn.feature_selection import VarianceThreshold
 
 
-# In[25]:
+# In[34]:
 
 
 def preparemldata(data_movie): # return ml_data as the original one which can be used to evaluate the model
@@ -23,7 +23,7 @@ def preparemldata(data_movie): # return ml_data as the original one which can be
     return ml_data,ml_data2
 
 
-# In[26]:
+# In[35]:
 
 
 def dim_reduc(ml_data):
@@ -34,7 +34,16 @@ def dim_reduc(ml_data):
     return ml_data_f  
 
 
-# In[27]:
+# In[59]:
+
+
+def dim_reduc_varthres(ml_data):
+    var = VarianceThreshold(.2) # drop the feature with variance below 20%
+    ml_data = var.fit_transform(ml_data)
+    return ml_data
+
+
+# In[60]:
 
 
 def knn(ml_data_reduc, metric):
@@ -43,7 +52,7 @@ def knn(ml_data_reduc, metric):
     return  distance,indices
 
 
-# In[28]:
+# In[61]:
 
 
 def item_based_cf(ml_data,distance,indices):
@@ -73,7 +82,7 @@ def item_based_cf(ml_data,distance,indices):
     return prd, test_prd
 
 
-# In[29]:
+# In[62]:
 
 
 def recommended_movies(prd,ml_data2,data_movie, test_prd,ml_data,num_recom):
@@ -94,7 +103,7 @@ def recommended_movies(prd,ml_data2,data_movie, test_prd,ml_data,num_recom):
     
 
 
-# In[30]:
+# In[63]:
 
 
 def eval(ml_data,test_prd,df_prd,data_movie,num_recom):
@@ -124,7 +133,7 @@ def eval(ml_data,test_prd,df_prd,data_movie,num_recom):
     print('MAE',mae)
 
 
-# In[31]:
+# In[66]:
 
 
 def main():
@@ -135,12 +144,13 @@ def main():
     data_movie = data_movie[data_movie['year'] > 2013]
     ml_data,ml_data2 = preparemldata(data_movie)
     ml_data_reduc = dim_reduc(ml_data2)
+    #ml_data_reduc = dim_reduc_varthres(ml_data2)
     distance,indices = knn(ml_data_reduc,'cosine')
     prd, test_prd = item_based_cf(ml_data,distance,indices)
     recommended_movies(prd,ml_data2,data_movie, test_prd,ml_data,10)
 
 
-# In[32]:
+# In[67]:
 
 
 if __name__ == "__main__":
