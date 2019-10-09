@@ -1,7 +1,7 @@
 # Recommender Systems
 Some of the machine learning projects I worked on for my former company in helping users recommend products, movies and candidates.
 
-I started with very simple item-item collaborative filtering method to recommend relevant products from the superstore datasets that is provided by Tableau. You may find the data here: https://community.tableau.com/docs/DOC-1236
+I started with a very simple item-item collaborative filtering method to recommend relevant products from the superstore datasets that is provided by Tableau. You may find the data here: https://community.tableau.com/docs/DOC-1236
 
 The collaborative filtering(CF) uses actions of users to suggest the similar items that have similar features. To implement CF, KNN is one of the simplest and effective methods to select from. KNN is known for its memory based approach which works directly with the values and searches of its nearest neighbors instantaneously, assuming no pre-built model. The Product Recommendations.py file in my repository takes records of interaction between a user and a product and calculates the similarities based on the quantity/clicks a user has performed and retrieves 5 closest neighbors to be the possible recommendations to the user.
 
