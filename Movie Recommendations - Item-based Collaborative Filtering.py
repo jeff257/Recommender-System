@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[24]:
+# In[1]:
 
 
 import pandas as pd
@@ -11,9 +11,10 @@ from sqlalchemy import create_engine
 from sklearn.neighbors import NearestNeighbors
 from sklearn.decomposition import PCA,KernelPCA
 from sklearn.feature_selection import VarianceThreshold
+from sklearn.preprocessing import StandardScaler
 
 
-# In[34]:
+# In[2]:
 
 
 def preparemldata(data_movie): # return ml_data as the original one which can be used to evaluate the model
@@ -23,10 +24,12 @@ def preparemldata(data_movie): # return ml_data as the original one which can be
     return ml_data,ml_data2
 
 
-# In[35]:
+# In[19]:
 
 
 def dim_reduc(ml_data):
+    sc = StandardScaler() #standardize the scale, because features with high varirance or different scale will receive more weights
+    ml_data = sc.fit_transform(ml_data)
     pca = PCA(.95)  # comp_selection to explain 95% of variation
     pca.fit_transform(ml_data)
     pca = PCA(n_components = pca.n_components_ ) #feature extraction creates brand new features.
@@ -34,7 +37,7 @@ def dim_reduc(ml_data):
     return ml_data_f  
 
 
-# In[59]:
+# In[20]:
 
 
 def dim_reduc_varthres(ml_data):
@@ -43,7 +46,7 @@ def dim_reduc_varthres(ml_data):
     return ml_data
 
 
-# In[60]:
+# In[21]:
 
 
 def knn(ml_data_reduc, metric):
@@ -52,7 +55,7 @@ def knn(ml_data_reduc, metric):
     return  distance,indices
 
 
-# In[61]:
+# In[22]:
 
 
 def item_based_cf(ml_data,distance,indices):
@@ -82,7 +85,7 @@ def item_based_cf(ml_data,distance,indices):
     return prd, test_prd
 
 
-# In[62]:
+# In[23]:
 
 
 def recommended_movies(prd,ml_data2,data_movie, test_prd,ml_data,num_recom):
@@ -103,7 +106,7 @@ def recommended_movies(prd,ml_data2,data_movie, test_prd,ml_data,num_recom):
     
 
 
-# In[63]:
+# In[24]:
 
 
 def eval(ml_data,test_prd,df_prd,data_movie,num_recom):
@@ -133,7 +136,7 @@ def eval(ml_data,test_prd,df_prd,data_movie,num_recom):
     print('MAE',mae)
 
 
-# In[66]:
+# In[25]:
 
 
 def main():
@@ -150,7 +153,7 @@ def main():
     recommended_movies(prd,ml_data2,data_movie, test_prd,ml_data,10)
 
 
-# In[67]:
+# In[26]:
 
 
 if __name__ == "__main__":
